@@ -7,7 +7,7 @@
 
 
 
-## Introduction
+## INTRODUCTION
 In this project, I implemented a cloud-native security monitoring solution for AWS S3 using CloudTrail, CloudWatch Logs, Metric Filters, and Alarms.
 The goal was to detect:
 -	Public exposure of a sensitive bucket (control-plane / management events)
@@ -17,7 +17,7 @@ This setup mimics real-world SOC detection workflows, allowing near-real-time al
 
 
 
-## Project Objectives
+## PROJECT OBJECTIVES
 -	Enable CloudTrail logging for S3 management and data events
 -	Configure CloudWatch metric filters to detect risky bucket changes and data access
 -	Create CloudWatch alarms to notify of potential security issues
@@ -70,6 +70,9 @@ This setup mimics real-world SOC detection workflows, allowing near-real-time al
 
 
 
+![S3 IMGS](S3M-IMGS/anotherbucket.jpg)
+
+
 
 ## STEP 4 – CREATING METRIC FILTERS
 I created 3 different metric filters to detect different activities which includes:
@@ -118,3 +121,83 @@ I wanted to monitor all object-level actions in my bucket. I created a comprehen
 
 
 ![S3 IMGS](S3M-IMGS/sns.jpg)
+
+
+
+## STEP 6 – CREATING ALARMS
+-	I created an alarm for each metric filter using the sns topic I created
+-	This made sure to trigger my sns topic which in turn send a notification to the subscribed email 
+
+
+
+
+![S3 IMGS](S3M-IMGS/alarms.jpg)
+
+
+
+
+## STEP 7 – TESTING AND VALIDATION
+-	I performed several test activities to ensure my setup worked:
+-	Uploaded, downloaded, and deleted objects in the bucket
+-	Removed Block All Public Access from the bucket
+-	Checked CloudTrail logs in CloudWatch and all relevant events appeared
+-	Verified that metric filters incremented correctly
+-	Confirmed that alarms triggered and SNS notifications were received
+-	Everything worked and I was glad to see that.
+
+
+
+
+  ![S3 IMGS](S3M-IMGS/TEST1.jpg)
+
+
+
+
+  ![S3 IMGS](S3M-IMGS/TEST2.jpg)
+
+
+
+
+
+
+# <p align = center> CONCLUSION
+
+
+
+
+## SECURITY VALUE
+Through this project, I gained full visibility into my S3 bucket, including:
+-	Public exposure changes
+-	Object-level access (uploads, downloads, deletions)
+-	Unauthorized anonymous access
+-	Near-real-time alerts for suspicious activity
+-	This setup mirrors real SOC practices and significantly improves my incident response readiness.
+
+
+
+
+
+## CHALLENGES
+-	Initially, I used the wrong management event filter for public access changes — the correct filter pattern is PutBucketPublicAccessBlock.
+-	I noticed a 2–5 minute delay between action and alarm due to CloudTrail delivery and CloudWatch metric evaluation.
+-	Metric filters require exact JSON paths to match the bucket name.
+
+
+
+
+
+## LESSONS LEARNED
+-	CloudTrail differentiates management vs data events, which is critical for S3 monitoring
+-	When using OR in metric filter, if  an alarm is triggered, it does not indicate which event among the patterns fired the alarm in the email notification. Splitting metrics per event provides better clarity
+-	CloudWatch and CloudTrail provides near-real-time monitoring, but Lambda integration is required for sub-minute alerts
+
+
+
+
+
+# <p align = center>ROUGH
+
+
+
+
+![S3 IMGS](S3M-IMGS/ROUGH.jpg)
